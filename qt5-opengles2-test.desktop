@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Qt5 GLES2.0 Test
+Icon=icon-launcher-component-gallery
+Exec=invoker -s --type=q /usr/bin/qt5-opengles2-test
