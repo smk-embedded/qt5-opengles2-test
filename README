@@ -1,0 +1,19 @@
+
+Qt5 OpenGL ES 2.0 Test Application
+==================================
+
+This application tests:
+
+ - OpenGL ES 2.0 context creation
+   - Rendering using OpenGL ES 2.0 (red background + squares)
+ - Window orientation
+   - Animating a yellow square in the top left corner
+ - Multi-touch input
+   - Drawing green squares at all touch point locations
+   - Printing debug output with detailed touch events
+ - Window focus
+   - Listening to focus changes and making the top left
+     square magenta (instead of yellow) while not focused
+ - Fullscreen handling
+   - Resize window to small size, then use showFullScreen()
+
