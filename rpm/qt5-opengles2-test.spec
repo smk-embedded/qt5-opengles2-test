@@ -1,5 +1,5 @@
 Name:		qt5-opengles2-test
-Version:	1.0.0
+Version:	1.0.2
 Release:	1
 Summary:	OpenGL ES 2.0 rendering + multi-touch input test application
 
