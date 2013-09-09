@@ -27,6 +27,7 @@
 
 #include <QGuiApplication>
 #include <QWindow>
+#include <QScreen>
 #include <QTime>
 #include <QTouchEvent>
 #include <QMap>
@@ -64,7 +65,6 @@ OpenGLES2Test::OpenGLES2Test()
     , timerId(-1)
 {
     setSurfaceType(QSurface::OpenGLSurface);
-    reportContentOrientationChange(Qt::LandscapeOrientation);
 
     // Start measuring time since initialization (for animation)
     time.start();
@@ -96,6 +96,11 @@ static const char *fragment_shader_src =
 void
 OpenGLES2Test::timerEvent(QTimerEvent *event)
 {
+    if (!isExposed()) {
+        qDebug() << "Not exposed yet";
+        return;
+    }
+
     if (context == NULL) {
         context = new QOpenGLContext(this);
         context->create();
@@ -234,10 +239,15 @@ main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     OpenGLES2Test window;
+    // FIXME: Remove this resize() once showFullScreen configures the window
     window.resize(640, 480);
     window.showFullScreen();
+
+    // Switch to landscape mode
+    window.reportContentOrientationChange(Qt::LandscapeOrientation);
+    window.screen()->setOrientationUpdateMask(Qt::LandscapeOrientation);
+
     qDebug() << "size:" << window.size();
 
     return app.exec();
 }
-
