@@ -54,6 +54,7 @@ class OpenGLES2Test : public QWindow {
         QMap<int,QPointF> touches;
         bool focused;
         int timerId;
+        bool initial;
 };
 
 OpenGLES2Test::OpenGLES2Test()
@@ -63,6 +64,7 @@ OpenGLES2Test::OpenGLES2Test()
     , touches()
     , focused(false)
     , timerId(-1)
+    , initial(true)
 {
     setSurfaceType(QSurface::OpenGLSurface);
 
@@ -214,14 +216,28 @@ bool
 OpenGLES2Test::event(QEvent *event)
 {
     switch (event->type()) {
+        case QEvent::Show:
+            if (initial) {
+                qDebug() << "Initial Focus";
+                if (timerId == -1) {
+                    timerId = startTimer(1000. / 60.); // target 60 FPS
+                }
+                initial = false;
+            }
+            break;
         case QEvent::FocusIn:
             qDebug() << "Got Focus";
-            timerId = startTimer(1000. / 60.); // target 60 FPS
+            if (timerId == -1) {
+                timerId = startTimer(1000. / 60.); // target 60 FPS
+            }
             focused = true;
             break;
         case QEvent::FocusOut:
             qDebug() << "Lost Focus";
-            killTimer(timerId);
+            if (timerId != -1) {
+                killTimer(timerId);
+                timerId = -1;
+            }
             focused = false;
             timerEvent(NULL); // render "backgrounded" state once
             break;
@@ -239,13 +255,11 @@ main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     OpenGLES2Test window;
-    // FIXME: Remove this resize() once showFullScreen configures the window
-    window.resize(640, 480);
     window.showFullScreen();
 
-    // Switch to landscape mode
-    window.reportContentOrientationChange(Qt::LandscapeOrientation);
-    window.screen()->setOrientationUpdateMask(Qt::LandscapeOrientation);
+    // This is how you would switch to landscape mode
+    //window.reportContentOrientationChange(Qt::LandscapeOrientation);
+    //window.screen()->setOrientationUpdateMask(Qt::LandscapeOrientation);
 
     qDebug() << "size:" << window.size();
 
