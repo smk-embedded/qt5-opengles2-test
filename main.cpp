@@ -38,6 +38,8 @@
 #include <QOpenGLShader>
 #include <QOpenGLShaderProgram>
 
+#include <QAccelerometer>
+
 class OpenGLES2Test : public QWindow {
     public:
         OpenGLES2Test();
@@ -55,6 +57,7 @@ class OpenGLES2Test : public QWindow {
         bool focused;
         int timerId;
         bool initial;
+        QAccelerometer accelerometer;
 };
 
 OpenGLES2Test::OpenGLES2Test()
@@ -65,8 +68,12 @@ OpenGLES2Test::OpenGLES2Test()
     , focused(false)
     , timerId(-1)
     , initial(true)
+    , accelerometer()
 {
     setSurfaceType(QSurface::OpenGLSurface);
+
+    // Start reading accelerometer values
+    accelerometer.start();
 
     // Start measuring time since initialization (for animation)
     time.start();
@@ -131,6 +138,43 @@ OpenGLES2Test::timerEvent(QTimerEvent *event)
     QMatrix4x4 projection;
     projection.ortho(0, width(), height(), 0, -1, 1);
     prog->setUniformValue("projection", projection);
+
+    // Visualize accelerometer readings
+    QAccelerometerReading *reading = accelerometer.reading();
+    QList<float> readings;
+    readings << reading->x() << reading->y() << reading->z();
+    float height = 40.f;
+    float width = size().width() / 3.f;
+    float spacing = height * 3.f / 4.f;
+    float border = 4.f;
+
+    float x = size().width() / 2.f;
+    float y = size().height() / 2.f - (3 * height) - (2 * spacing);
+    foreach (float reading, readings) {
+        float bgvtx[] = {
+            x - width, y,
+            x + width, y,
+            x - width, y + height,
+            x + width, y + height,
+        };
+
+        prog->setUniformValue("color", 0.0, 0.0, 0.0, 1.0);
+        glVertexAttribPointer(vtxcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, bgvtx);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        float fgvtx[] = {
+            x + border, y + border,
+            x + border + (width - 2 * border) * reading / 9.81, y + border,
+            x + border, y + height - border,
+            x + border + (width - 2 * border) * reading / 9.81, y + height - border,
+        };
+
+        prog->setUniformValue("color", 1.0, 1.0, 1.0, 1.0);
+        glVertexAttribPointer(vtxcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, fgvtx);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        y += height + spacing;
+    }
 
     // offset width (in pixels) = half side of squares
     int offset = 40;
