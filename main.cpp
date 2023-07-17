@@ -106,6 +106,8 @@ static const char *fragment_shader_src =
 void
 OpenGLES2Test::timerEvent(QTimerEvent *event)
 {
+    Q_UNUSED(event);
+
     if (!isExposed()) {
         qDebug() << "Not exposed yet";
         return;
