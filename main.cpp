@@ -33,6 +33,7 @@
 #include <QMap>
 
 #include <QOpenGLContext>
+#include <QOpenGLFunctions>
 #include <QSurfaceFormat>
 
 #include <QOpenGLShader>
@@ -40,7 +41,7 @@
 
 #include <QAccelerometer>
 
-class OpenGLES2Test : public QWindow {
+class OpenGLES2Test : public QWindow, protected QOpenGLFunctions {
     public:
         OpenGLES2Test();
 
