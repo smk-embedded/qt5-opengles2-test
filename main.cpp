@@ -33,6 +33,7 @@
 #include <QMap>
 
 #include <QOpenGLContext>
+#include <QOpenGLFunctions>
 #include <QSurfaceFormat>
 
 #include <QOpenGLShader>
@@ -40,7 +41,7 @@
 
 #include <QAccelerometer>
 
-class OpenGLES2Test : public QWindow {
+class OpenGLES2Test : public QWindow, protected QOpenGLFunctions {
     public:
         OpenGLES2Test();
 
@@ -105,6 +106,8 @@ static const char *fragment_shader_src =
 void
 OpenGLES2Test::timerEvent(QTimerEvent *event)
 {
+    Q_UNUSED(event);
+
     if (!isExposed()) {
         qDebug() << "Not exposed yet";
         return;
@@ -165,9 +168,9 @@ OpenGLES2Test::timerEvent(QTimerEvent *event)
 
             float fgvtx[] = {
                 x + border, y + border,
-                x + border + (width - 2 * border) * reading / 9.81, y + border,
+                x + border + (width - 2 * border) * reading / 9.81f, y + border,
                 x + border, y + height - border,
-                x + border + (width - 2 * border) * reading / 9.81, y + height - border,
+                x + border + (width - 2 * border) * reading / 9.81f, y + height - border,
             };
 
             prog->setUniformValue("color", 1.0, 1.0, 1.0, 1.0);
@@ -193,10 +196,10 @@ OpenGLES2Test::timerEvent(QTimerEvent *event)
     QPointF c = center + (QPointF(-offset, offset) * m);
     QPointF d = center + (QPointF(offset, offset) * m);
     float vertices[] = {
-        a.x(), a.y(),
-        b.x(), b.y(),
-        c.x(), c.y(),
-        d.x(), d.y(),
+        (float)a.x(), (float)a.y(),
+        (float)b.x(), (float)b.y(),
+        (float)c.x(), (float)c.y(),
+        (float)d.x(), (float)d.y(),
     };
 
     glVertexAttribPointer(vtxcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, vertices);
@@ -211,10 +214,10 @@ OpenGLES2Test::timerEvent(QTimerEvent *event)
     prog->setUniformValue("color", 0.0, 1.0, 0.0, 1.0);
     foreach (QPointF point, touches.values()) {
         float vtx[] = {
-            point.x()-offset, point.y()-offset,
-            point.x()+offset, point.y()-offset,
-            point.x()-offset, point.y()+offset,
-            point.x()+offset, point.y()+offset,
+            (float)point.x()-offset, (float)point.y()-offset,
+            (float)point.x()+offset, (float)point.y()-offset,
+            (float)point.x()-offset, (float)point.y()+offset,
+            (float)point.x()+offset, (float)point.y()+offset,
         };
         glVertexAttribPointer(vtxcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, vtx);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
