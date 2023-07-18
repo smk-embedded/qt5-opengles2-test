@@ -81,7 +81,9 @@ OpenGLES2Test::OpenGLES2Test()
 }
 
 static const char *vertex_shader_src =
+"#ifdef GL_ES\n"
 "precision mediump float;\n"
+"#endif\n"
 "\n"
 "attribute vec2 vtxcoord;\n"
 "uniform mat4 projection;\n"
@@ -93,7 +95,9 @@ static const char *vertex_shader_src =
 ;
 
 static const char *fragment_shader_src =
+"#ifdef GL_ES\n"
 "precision mediump float;\n"
+"#endif\n"
 "\n"
 "uniform vec4 color;\n"
 "\n"
