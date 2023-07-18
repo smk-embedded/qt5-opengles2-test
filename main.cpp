@@ -118,6 +118,7 @@ OpenGLES2Test::timerEvent(QTimerEvent *event)
         context->create();
         context->makeCurrent(this);
 
+        initializeOpenGLFunctions();
         glViewport(0, 0, width(), height());
         glClearColor(1.0, 0.0, 0.0, 1.0);
 
