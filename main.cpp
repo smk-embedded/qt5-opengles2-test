@@ -29,6 +29,7 @@
 #include <QWindow>
 #include <QScreen>
 #include <QTime>
+#include <QTimer>
 #include <QTouchEvent>
 #include <QMap>
 
@@ -306,7 +307,16 @@ OpenGLES2Test::event(QEvent *event)
 int
 main(int argc, char *argv[])
 {
+    int timeout = 0;
     QGuiApplication app(argc, argv);
+
+    // Handle --timeout argument
+    for (int i = 1; i < argc; ++i) {
+        if (QString(argv[i]) == "--timeout" && i + 1 < argc) {
+            timeout = QString(argv[i + 1]).toInt();
+            break;
+        }
+    }
 
     OpenGLES2Test window;
     window.showFullScreen();
@@ -316,6 +326,11 @@ main(int argc, char *argv[])
     //window.screen()->setOrientationUpdateMask(Qt::LandscapeOrientation);
 
     qDebug() << "size:" << window.size();
+
+    if (timeout > 0) {
+        qDebug() << "Timeout set to" << timeout << "seconds";
+        QTimer::singleShot(timeout * 1000, &app, &QCoreApplication::quit);
+    }
 
     return app.exec();
 }
